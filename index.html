@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root { 
+      --nfi-blue: #004a99; 
+      --wheels-red: #e31b23;
+      --nfi-dark: #002651;
+      --glass: rgba(255, 255, 255, 0.97);
+    }
+
+    body { 
+      font-family: 'Segoe UI', Arial, sans-serif; 
+      margin: 0; 
+      min-height: 100vh;
+      background: linear-gradient(rgba(0, 45, 98, 0.6), rgba(0, 45, 98, 0.8)), 
+                  url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2000&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      backdrop-filter: saturate(2) contrast(1.1);
+    }
+    
+    .header { 
+      background: white; 
+      padding: 25px 20px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+      border-bottom: 8px solid var(--nfi-blue);
+    }
+
+    .brand-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-text {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+    }
+
+    .nfi-part { color: var(--nfi-blue); }
+    
+    .divider-part { 
+      color: #ccc; 
+      margin: 0 15px; 
+      font-weight: 200;
+    }
+
+    .wheels-part { color: var(--wheels-red); }
+
+    .rim-icon {
+      margin-left: 10px;
+      color: #333;
+      display: flex;
+      align-items: center;
+      animation: spin 10s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .container { width: 92%; max-width: 520px; margin: 40px auto; padding-bottom: 80px; }
+    
+    .search-bar {
+      background: white;
+      border-radius: 20px;
+      display: flex;
+      padding: 8px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    input { 
+      flex: 1; 
+      padding: 15px 20px; 
+      font-size: 22px; 
+      border: none; 
+      outline: none; 
+      font-weight: 600;
+      color: #222;
+    }
+
+    .btn-search { 
+      background: var(--nfi-blue); 
+      color: white; 
+      border: none; 
+      width: 70px;
+      border-radius: 15px; 
+      cursor: pointer; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+    }
+    
+    .btn-search:hover { background: var(--wheels-red); transform: scale(1.05); }
+
+    .card { 
+      background: var(--glass); 
+      padding: 40px; 
+      border-radius: 35px; 
+      margin-top: 35px;
+      box-shadow: 0 35px 70px rgba(0,0,0,0.4);
+      border-top: 15px solid var(--nfi-blue);
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.9) translateY(40px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .label { 
+      color: #888; 
+      font-size: 14px; 
+      font-weight: 800; 
+      text-transform: uppercase; 
+      letter-spacing: 2px; 
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .loc-hero { 
+      font-size: 70px; 
+      color: var(--nfi-blue); 
+      font-weight: 900; 
+      margin: 0 0 30px 0; 
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+    
+    .details-row { 
+      border-top: 2px solid rgba(0,0,0,0.06); 
+      padding-top: 25px; 
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: end;
+    }
+    
+    .item-id-txt { font-size: 22px; color: #111; font-weight: 700; display: block; }
+    
+    .stock-pill { 
+      background: var(--nfi-blue); 
+      color: white; 
+      padding: 15px 30px; 
+      border-radius: 20px; 
+      font-size: 35px; 
+      font-weight: 900; 
+      box-shadow: 0 10px 20px rgba(0, 74, 153, 0.3);
+      line-height: 1;
+    }
+
+    .loader-msg { color: white; text-align: center; margin-top: 30px; font-weight: bold; font-size: 14px; letter-spacing: 2px; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="brand-container">
+      <div class="brand-text">
+        <span class="nfi-part">NFI</span>
+        <span class="divider-part">|</span>
+        <span class="wheels-part">WHEELS</span>
+        <div class="rim-icon">
+          <i data-lucide="radius" size="48" stroke-width="3"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="search-bar">
+      <input type="number" id="upcInput" placeholder="Enter UPC..." autofocus>
+      <button class="btn-search" onclick="handleSearch()">
+        <i data-lucide="search" size="32"></i>
+      </button>
+    </div>
+    <div id="results"></div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    document.getElementById('upcInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') handleSearch();
+    });
+
+    function handleSearch() {
+      const val = document.getElementById('upcInput').value;
+      const display = document.getElementById('results');
+      if (!val) return;
+      
+      display.innerHTML = "<div class='loader-msg'>ACCESSING NFI DATABASE...</div>";
+      
+      const SPREADSHEET_ID = "1z_Pwa3V7ouhu0X4EOgfRI6fri8u5i-IxxBm_KQL61Zo";
+      const API_URL = "https://script.google.com/macros/s/AKfycbxxoWtVWpP7bVxGGBeVfoGWhx1dXO3JkAlF4-p3a0z9RZ9LgJxwwW7YorrnVZ-QgUkwFw/exec?upc=" + encodeURIComponent(val);
+      
+      fetch(API_URL)
+        .then(response => response.json())
+        .then(data => {
+          if (typeof data === 'string' || data.error) {
+            display.innerHTML = `<p style="color:white; text-align:center; background:rgba(200,0,0,0.8); padding:20px; border-radius:20px;">${data.error || data}</p>`;
+          } else if (Array.isArray(data) && data.length > 0) {
+            display.innerHTML = data.map(item => `
+              <div class="card">
+                <span class="label">Storage Location</span>
+                <div class="loc-hero">${item.location}</div>
+                
+                <div class="details-row">
+                  <div>
+                    <span class="label">Item Code</span>
+                    <span class="item-id-txt">${item.description}</span>
+                  </div>
+                  <div style="text-align:right">
+                    <span class="label">Stock</span>
+                    <div class="stock-pill">${item.quantity}</div>
+                  </div>
+                </div>
+              </div>`).join('');
+          } else {
+            display.innerHTML = `<p style="color:white; text-align:center; background:rgba(0,0,0,0.5); padding:20px; border-radius:20px; margin-top:30px;">Item <b>${val}</b> not found.</p>`;
+          }
+        })
+        .catch(error => {
+          display.innerHTML = `<p style="color:white; text-align:center; background:rgba(200,0,0,0.8); padding:20px; border-radius:20px;">Error: ${error.message}</p>`;
+        });
+    }
+  </script>
+</body>
+</html>
